@@ -2,12 +2,9 @@ name: Build Docker Images
 
 on:
   push:
-    branches:
-      - main
-  release:
-    types: [created, published, released]
-
-
+      branches:
+        - main  
+        
 jobs:
 
   ghcr-build-pg:
@@ -52,22 +49,21 @@ jobs:
           IMAGE_NAME: "${{ github.repository }}/pg"
 
 
-     
-  delete-old-images:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Trigger Delete Old Image Workflow
-        run: |
-            curl -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/actions/workflows/delete-old-image.yml/dispatches \
-              -d '{"ref": "main"}'
+  trigger-cleanup:
+      uses: multi-repo/workflows/.github/workflows/clean-registry.yml@main
+      with:
+        owner: multi-repo
+        repository: postgres
+        package: postgres/pg
+        keep_n_tagged: 2
+        dry_run: true  
+      secrets:
+        personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 
   deploy:
-    needs: [delete-old-images, ghcr-build-pg]
+    needs: [trigger-cleanup, ghcr-build-pg]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to environment

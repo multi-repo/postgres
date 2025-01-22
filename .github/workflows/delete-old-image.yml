@@ -7,14 +7,15 @@ jobs:
 
   cleanup-pg:
     runs-on: ubuntu-latest
+
     steps:
 
       - name: Cleanup Docker images from GHCR
         uses: dataaxiom/ghcr-cleanup-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-          owner: ${{ github.repository_owner }}
-          repository: multi-repo/Postgres
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          owner: multi-repo
+          repository: postgres
           keep-n-tagged: 1
-          package: multi-repo/Postgres/pg
+          package: postgres/pg
           dry-run: false
