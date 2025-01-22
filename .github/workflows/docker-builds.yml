@@ -1,11 +1,8 @@
 name: Build Docker Images
 
 on:
-  push:
-    branches:
-      - main
   release:
-    types: [created, published, released]
+    types: [published]
 
 
 jobs:
