@@ -7,46 +7,13 @@ on:
         
 jobs:
 
-  ghcr-build-pg:
-    runs-on: ubuntu-latest
-    container:
-      image: gcr.io/kaniko-project/executor:v1.23.0-debug  
-      options: --entrypoint /bin/sh
-    permissions: 
-      packages: write 
 
-    
-    steps:
-
-
-      - name: Set branch name as environment variable
-        run: echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-
-      - name: Set up Docker config for Kaniko
-        run: |
-          cat <<EOF > /kaniko/.docker/config.json
-          {
-            "auths": {
-              "ghcr.io": {
-                "auth": "$(echo -n "$GIT_USERNAME:$GIT_PASSWORD" | base64 -w0)"
-              }
-            }
-          }
-          EOF
-        env:
-          GIT_USERNAME: ${{ github.actor }} 
-          GIT_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-    
-
-      - name: Build and push pg
-        run: |
-          /kaniko/executor --dockerfile="Dockerfile" \
-            --context="${{ github.repositoryUrl }}#${{ github.ref_name }}#${{ github.sha }}"  \
-            --destination="$GH_REGISTRY/$IMAGE_NAME:${GITHUB_REF_NAME}" \
-
-        env:
-          GH_REGISTRY: "ghcr.io"
-          IMAGE_NAME: "${{ github.repository }}/pg"
+  trigger-build:
+    uses: multi-repo/workflows/.github/workflows/kaniko-build.yml@main
+    with:
+      image-name: ${{ github.repository }}/pg
+    secrets:
+      personal_access_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 
 
@@ -63,7 +30,7 @@ jobs:
 
 
   deploy:
-    needs: [trigger-cleanup, ghcr-build-pg]
+    needs: [trigger-cleanup, trigger-build]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to environment
