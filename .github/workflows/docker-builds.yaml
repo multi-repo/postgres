@@ -9,7 +9,7 @@ jobs:
 
 
   trigger-build:
-    uses: multi-repo/workflows/.github/workflows/kaniko-build.yml@main
+    uses: multi-repo/workflows/.github/workflows/kaniko-build.yaml@main
     with:
       image-name: ${{ github.repository }}/pg
     secrets:
@@ -18,9 +18,9 @@ jobs:
 
 
   trigger-cleanup:
-      uses: multi-repo/workflows/.github/workflows/clean-registry.yml@main
+      uses: multi-repo/workflows/.github/workflows/clean-registry.yaml@main
       with:
-        owner: multi-repo
+        owner: ${{ github.repository_owner }}
         repository: postgres
         package: postgres/pg
         keep_n_tagged: 2
