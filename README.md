@@ -11,7 +11,7 @@ podman run \
 ```
 ` postgres://admin:secret@localhost:5671/mydb `
 
-### Start (custom)
+### Start custom (Linux/mac os)
 ```
 podman run \
   --name my_postgres \
@@ -33,3 +33,6 @@ podman run `
   -p 5671:5432 `
   ghcr.io/multi-repo/postgres/pg:main
 ```
+
+### Url format
+`postgres://user:password@host:port/database`
