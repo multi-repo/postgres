@@ -2,7 +2,7 @@
 
 ### Start custom (Linux/mac os)
 ```
-podman run \
+podman run -d \
   --name my_postgres \
   -e POSTGRES_USER=admin \
   -e POSTGRES_PASSWORD=secret \
